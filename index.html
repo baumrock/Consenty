@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html
+  class="uk-background-muted"
+  lang="en"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Consenty Docs</title>
+    <script
+      src="consenty.js"
+      defer
+    ></script>
+    <link
+      rel="stylesheet"
+      href="lib/uikit.min.css"
+    />
+    <script
+      src="lib/uikit.min.js"
+      defer
+    ></script>
+    <style>
+      h2,
+      h3 {
+        margin-top: 0;
+      }
+      .code.border {
+        border: 2px solid #efefef;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body class="uk-padding-small">
+    <div
+      class="uk-card uk-card-default"
+      style="max-width: 800px; margin: auto"
+    >
+      <div class="uk-card-body">
+        <h1 class="uk-text-center uk-margin-medium-bottom">Consenty Docs</h1>
+
+        <div class="uk-alert">
+          <label>
+            <input
+              class="uk-checkbox"
+              type="checkbox"
+              consenty-toggle="highlight"
+            />
+            Allow code highlighting and show docs
+          </label>
+        </div>
+        <div class="uk-text-small uk-margin-bottom">
+          Note: If you allow code highlighting this website will lode the
+          shiki.style library from CDN @ https://esm.sh/shiki@1.0.0
+        </div>
+
+        <template consenty-if="highlight">
+          <hr />
+          <h2>Setup</h2>
+
+          <p><a href=https://github.com/baumrock/Consenty>Download Consenty from Github</a> and add it to the head of your website:</p>
+
+          <template class="code">
+            <script
+              src="consenty.js"
+              defer
+            ></script>
+          </template>
+
+          <hr />
+
+          <h2>Hello World</h2>
+
+          <div class="uk-alert">
+            <strong>Disclaimer</strong>: This page uses the <a href=https://getuikit.com/ target=_blank>UIkit frontend
+            framework</a> for styling. Consenty will work without any external
+            dependencies!
+          </div>
+
+          <div class="uk-margin code border">
+            <button
+              class="uk-button"
+              consenty-allow="hello-world"
+            >
+              ALLOW
+            </button>
+            <button
+              class="uk-button"
+              consenty-revoke="hello-world"
+            >
+              REVOKE
+            </button>
+            <div class="uk-margin-small-top">
+              <template consenty-if="hello-world">allowed</template>
+              <template consenty-if="!hello-world">revoked</template>
+            </div>
+          </div>
+
+          <div class="uk-text-small">
+            Note: Try reloading the page and see that the state persists!
+          </div>
+
+          <hr />
+
+          <h2>Script Example</h2>
+
+          <p>
+            The example above has one caveat: If you put a script-tag inside one
+            of the &lt;span&gt;-tags that script would either immediately get
+            executed or if using a src-attribute load the script from the given
+            source. The idea of consenty is to prevent this, so you can simply
+            use the &lt;template&gt;-tag instead:
+          </p>
+
+          <div class="uk-margin code border">
+            <button
+              class="uk-button"
+              consenty-allow="script-example"
+            >
+              ALLOW
+            </button>
+            <button
+              class="uk-button"
+              consenty-revoke="script-example"
+            >
+              REVOKE
+            </button>
+            <div class="uk-margin-small-top">
+              check your console for this example
+            </div>
+            <template consenty-if="script-example">
+              <script>
+                alert("Script loaded");
+                console.log("script example allowed");
+              </script>
+            </template>
+            <template consenty-if="!script-example">
+              <script>
+                console.log("script example revoked");
+              </script>
+            </template>
+          </div>
+
+          <hr />
+
+          <h2>YouTube Inline Example</h2>
+
+          <hr />
+
+          <h2>YouTube Modal Example</h2>
+
+          <hr />
+
+          <h2>IF on multiple elements</h2>
+
+          <div class="code border uk-margin-small-bottom">
+            <label>
+              <input
+                type="checkbox"
+                class="uk-checkbox"
+                consenty-toggle="multiple"
+              />
+              Toggle multiple elements at once
+            </label>
+            <template consenty-if="multiple">one</template>
+            <template consenty-if="multiple">two</template>
+            <template consenty-if="multiple">three</template>
+          </div>
+
+          <hr />
+
+          <h2>Callbacks</h2>
+
+          <p>Please check the console of your browser dev tools!</p>
+
+          <h3>init</h3>
+
+          <div class="code">
+            <script>
+              document.addEventListener("consenty:init", () => {
+                console.log("consenty initialised");
+              });
+            </script>
+          </div>
+
+          <h3>allow</h3>
+
+          <div class="code">
+            <script>
+              document.addEventListener("consenty:allow", (e) => {
+                console.log("user gave consent for " + e.detail);
+              });
+            </script>
+          </div>
+
+          <h3>revoke</h3>
+
+          <div class="code">
+            <script>
+              document.addEventListener("consenty:revoke", (e) => {
+                console.log("user revoked consent for " + e.detail);
+              });
+            </script>
+          </div>
+
+          <h3>change</h3>
+
+          <div class="code">
+            <script>
+              document.addEventListener("consenty:change", (e) => {
+                console.log(
+                  "user changed consent for " +
+                    e.detail.name +
+                    " from " +
+                    e.detail.from +
+                    " to " +
+                    e.detail.to
+                );
+              });
+            </script>
+          </div>
+
+          <script type="module">
+            import { codeToHtml } from "https://esm.sh/shiki@1.0.0";
+            document.querySelectorAll(".code").forEach((element) => {
+              const div = document.createElement("div");
+              element.after(div);
+
+              // sanitize html
+              let code = element.innerHTML;
+              let lines = code.split("\n").slice(1, -1);
+              const spaces = lines[0].search(/</);
+              code = lines.map((line) => line.substring(spaces)).join("\n");
+
+              codeToHtml(code, { lang: "html", theme: "nord" })
+                .then((highlightedCode) => {
+                  div.innerHTML = highlightedCode;
+                })
+                .catch((error) => {
+                  console.error("Error highlighting code with Shiki:", error);
+                });
+            });
+          </script>
+        </template>
+      </div>
+    </div>
+    <div class="uk-text-center uk-text-muted uk-text-small uk-section-small">
+      built in vienna by <a href="https://www.baumrock.com">baumrock.com</a>
+    </div>
+  </body>
+</html>

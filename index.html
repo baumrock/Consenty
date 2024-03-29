@@ -456,43 +456,46 @@
 
           <h3>init</h3>
 
-          <div class="code">
-            <script>
-              document.addEventListener("consenty:init", () => {
-                console.log("consenty initialised");
-              });
-            </script>
-          </div>
+          <script
+            class="code"
+            data-lang="js"
+          >
+            document.addEventListener("consenty:init", () => {
+              console.log("consenty initialised");
+            });
+          </script>
 
           <h3>allow + revoke</h3>
 
-          <div class="code">
-            <script>
-              document.addEventListener("consenty:allow", (e) => {
-                console.log("user gave consent for " + e.detail);
-              });
-              document.addEventListener("consenty:revoke", (e) => {
-                console.log("user revoked consent for " + e.detail);
-              });
-            </script>
-          </div>
+          <script
+            class="code"
+            data-lang="js"
+          >
+            document.addEventListener("consenty:allow", (e) => {
+              console.log("user gave consent for " + e.detail);
+            });
+            document.addEventListener("consenty:revoke", (e) => {
+              console.log("user revoked consent for " + e.detail);
+            });
+          </script>
 
           <h3>change</h3>
 
-          <div class="code">
-            <script>
-              document.addEventListener("consenty:change", (e) => {
-                console.log(
-                  "user changed consent for " +
-                    e.detail.name +
-                    " from " +
-                    e.detail.from +
-                    " to " +
-                    e.detail.to
-                );
-              });
-            </script>
-          </div>
+          <script
+            class="code"
+            data-lang="js"
+          >
+            document.addEventListener("consenty:change", (e) => {
+              console.log(
+                "user changed consent for " +
+                  e.detail.name +
+                  " from " +
+                  e.detail.from +
+                  " to " +
+                  e.detail.to
+              );
+            });
+          </script>
 
           <script type="module">
             import { codeToHtml } from "https://esm.sh/shiki@1.0.0";
@@ -544,7 +547,7 @@
       // this is to make sure that the docs' code sections don't show markup
       // that was injected by consently and is not the initial markup
       var codes = {};
-      document.addEventListener("consenty:beforeshow", (e) => {
+      document.addEventListener("consenty:beforeload", (e) => {
         let id = e.detail;
         let el = consenty.elements[id].old;
         let code = el.closest(".code");

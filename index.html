@@ -16,10 +16,10 @@
     ></script>
     <link
       rel="stylesheet"
-      href="lib/uikit.min.css"
+      href="assets/uikit.min.css"
     />
     <script
-      src="lib/uikit.min.js"
+      src="assets/uikit.min.js"
       defer
     ></script>
     <style>
@@ -27,9 +27,20 @@
       h3 {
         margin-top: 0;
       }
-      .code.border {
+      .border {
         border: 2px solid #efefef;
         padding: 10px;
+      }
+      .uk-card-default {
+        color: #1b1b1b;
+      }
+      iframe {
+        max-width: 100%;
+      }
+      em {
+        color: black;
+        background-color: #efefef;
+        padding: 3px 8px;
       }
     </style>
   </head>
@@ -58,9 +69,15 @@
 
         <template consenty-if="highlight">
           <hr />
+
           <h2>Setup</h2>
 
-          <p><a href=https://github.com/baumrock/Consenty>Download Consenty from Github</a> and add it to the head of your website:</p>
+          <p>
+            <a href="https://github.com/baumrock/Consenty">
+              Download Consenty from Github
+            </a>
+            and add it to the head of your website:
+          </p>
 
           <template class="code">
             <script
@@ -74,8 +91,9 @@
           <h2>Hello World</h2>
 
           <div class="uk-alert">
-            <strong>Disclaimer</strong>: This page uses the <a href=https://getuikit.com/ target=_blank>UIkit frontend
-            framework</a> for styling. Consenty will work without any external
+            Note: This demo-page uses the
+            <a href="https://getuikit.com/">UIkit frontend framework</a>
+            for styling, but Consenty will work without any external
             dependencies!
           </div>
 
@@ -93,10 +111,21 @@
               REVOKE
             </button>
             <div class="uk-margin-small-top">
+              Current status:
               <template consenty-if="hello-world">allowed</template>
-              <template consenty-if="!hello-world">revoked</template>
+              <template
+                consenty-if="!hello-world"
+                consenty-tag="span"
+                >revoked</template
+              >
             </div>
           </div>
+
+          <p>
+            Consenty will inject a &lt;div&gt; right before your
+            &lt;template&gt; - you can make it use a &lt;span&gt; instead by
+            adding <em>consenty-tag="span"</em> to your element.
+          </p>
 
           <div class="uk-text-small">
             Note: Try reloading the page and see that the state persists!
@@ -133,12 +162,12 @@
             <template consenty-if="script-example">
               <script>
                 alert("Script loaded");
-                console.log("script example allowed");
+                console.log("script example status: allowed");
               </script>
             </template>
             <template consenty-if="!script-example">
               <script>
-                console.log("script example revoked");
+                console.log("script example status: revoked");
               </script>
             </template>
           </div>
@@ -147,9 +176,254 @@
 
           <h2>YouTube Inline Example</h2>
 
+          <div class="uk-alert">
+            Note: This example uses UIkit for easier styling.
+          </div>
+
+          <div class="code border keepclasses uk-margin-bottom">
+            <template consenty-if="!youtube-inline">
+              <div class="uk-inline">
+                <img
+                  src="assets/thumbnail.jpg"
+                  width="560"
+                  height="315"
+                />
+                <div class="uk-overlay-default uk-position-cover">
+                  <div class="uk-position-center uk-text-center">
+                    <a
+                      class="uk-button uk-button-primary"
+                      consenty-allow="youtube-inline"
+                    >
+                      Allow Youtube
+                    </a>
+                    <div class="uk-margin-small-top">See [privacy policy]</div>
+                  </div>
+                </div>
+              </div>
+            </template>
+            <template consenty-if="youtube-inline">
+              <iframe
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/ncS36UqaBvc?autoplay=1"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+              ></iframe>
+            </template>
+            <div class="uk-margin-small-top">
+              <div>
+                Place this on your privacy page so that the user can revoke
+                consent:
+              </div>
+              <label>
+                <input
+                  type="checkbox"
+                  class="uk-checkbox"
+                  consenty-toggle="youtube-inline"
+                />
+                Allow embedding of YouTube videos
+              </label>
+            </div>
+          </div>
+
           <hr />
 
           <h2>YouTube Modal Example</h2>
+
+          <div class="uk-alert">
+            Note: This example uses UIkit for easier styling and for the
+            <a
+              href="https://getuikit.com/docs/modal"
+              target="_blank"
+              >Modal Component.</a
+            >
+          </div>
+
+          <p>The basic concept is as follows:</p>
+
+          <template class="code">
+            <!-- always show the image to open the modal -->
+            <!-- listen to click events -->
+            <a
+              href="#"
+              consenty-click="youtube-modal"
+              ><img src="..."
+            /></a>
+
+            <!-- modal to ask for consent -->
+            <div
+              id="yt-modal-consent"
+              uk-modal
+            >
+              ...
+            </div>
+
+            <!-- modal to show the video -->
+            <!-- !! use <template> to prevent loading of iframe !!  -->
+            <template consenty-if="youtube-modal">
+              <div
+                id="yt-modal"
+                uk-modal
+              >
+                <!-- youtube iframe here -->
+              </div>
+            </template>
+          </template>
+
+          <p>
+            And then some custom JS to do different things based on consent:
+          </p>
+
+          <script
+            class="code"
+            data-lang="js"
+          >
+            // handle click event and open modal according to consent
+            document.addEventListener("consenty:click", (e) => {
+              const prop = "youtube-modal";
+              if (e.detail !== prop) return;
+              if (consenty.isAllowed(prop)) {
+                consenty
+                  // this loads markup from within <template>
+                  .load(prop)
+                  // wait for the promise
+                  .then(() => {
+                    // open the youtube modal
+                    UIkit.modal("#yt-modal").show();
+                  });
+              } else {
+                // open the consent modal
+                UIkit.modal("#yt-modal-consent").show();
+              }
+            });
+          </script>
+
+          <p>
+            Finally we need to handle clicks on buttons in the consent modal:
+          </p>
+
+          <script
+            class="code"
+            data-lang="js"
+          >
+            document.addEventListener("click", (e) => {
+              // clicked on "allow once"
+              if (e.target.matches("#yt-modal-once")) {
+                // load iframe into dom and show modal
+                consenty.load("youtube-modal").then(() => {
+                  UIkit.modal("#yt-modal").show();
+                });
+              }
+              // clicked on "allow always"
+              else if (e.target.matches("#yt-modal-always")) {
+                // make consent persistant
+                consenty.allow("youtube-modal");
+                // load iframe into dom and show modal
+                consenty.load("youtube-modal").then(() => {
+                  UIkit.modal("#yt-modal").show();
+                });
+              }
+            });
+          </script>
+
+          <div class="border uk-margin-bottom">
+            <div class="uk-inline">
+              <img
+                src="assets/thumbnail.jpg"
+                width="560"
+                height="315"
+              />
+              <div class="uk-overlay-default uk-position-cover">
+                <div class="uk-position-center uk-text-center">
+                  <!-- This is an anchor toggling the modal -->
+                  <a
+                    href="#"
+                    consenty-click="youtube-modal"
+                    class="uk-button uk-button-primary"
+                  >
+                    Play Video
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="uk-margin-small-top">
+              <div>
+                Place this on your privacy page so that the user can revoke
+                consent:
+              </div>
+              <label>
+                <input
+                  type="checkbox"
+                  class="uk-checkbox"
+                  consenty-toggle="youtube-modal"
+                />
+                Allow loading of YouTube videos in modals
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <!-- this is the consent modal asking the user for permission -->
+            <div
+              id="yt-modal-consent"
+              uk-modal
+            >
+              <div class="uk-modal-dialog uk-modal-body">
+                <button
+                  class="uk-modal-close-default"
+                  type="button"
+                  uk-close
+                ></button>
+                <h2 class="uk-modal-title">YouTube Consent</h2>
+                <p class="uk-background-muted uk-padding-small">Lorem Ipsum</p>
+                <p class="uk-flex uk-flex-between">
+                  <button
+                    id="yt-modal-once"
+                    class="uk-button uk-button-default"
+                    type="button"
+                  >
+                    Allow Once
+                  </button>
+                  <button
+                    id="yt-modal-always"
+                    class="uk-button uk-button-primary uk-modal-close"
+                    type="button"
+                  >
+                    Allow Always
+                  </button>
+                </p>
+              </div>
+            </div>
+
+            <!-- this shows the video in the iframe -->
+            <template consenty-if="youtube-modal">
+              <div
+                id="yt-modal"
+                class="uk-flex-top"
+                uk-modal
+              >
+                <div
+                  class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical"
+                >
+                  <button
+                    class="uk-modal-close-outside"
+                    type="button"
+                    uk-close
+                  ></button>
+                  <iframe
+                    src="https://www.youtube.com/embed/ncS36UqaBvc?autoplay=1"
+                    width="1920"
+                    height="1080"
+                    uk-video
+                    uk-responsive
+                  ></iframe>
+                </div>
+              </div>
+            </template>
+          </div>
 
           <hr />
 
@@ -171,9 +445,14 @@
 
           <hr />
 
-          <h2>Callbacks</h2>
+          <h2>Events</h2>
 
           <p>Please check the console of your browser dev tools!</p>
+
+          <div class="uk-alert">
+            All events also have an "before..." event that you can listen to, eg
+            <em>beforeinit</em>!
+          </div>
 
           <h3>init</h3>
 
@@ -185,20 +464,13 @@
             </script>
           </div>
 
-          <h3>allow</h3>
+          <h3>allow + revoke</h3>
 
           <div class="code">
             <script>
               document.addEventListener("consenty:allow", (e) => {
                 console.log("user gave consent for " + e.detail);
               });
-            </script>
-          </div>
-
-          <h3>revoke</h3>
-
-          <div class="code">
-            <script>
               document.addEventListener("consenty:revoke", (e) => {
                 console.log("user revoked consent for " + e.detail);
               });
@@ -230,11 +502,28 @@
 
               // sanitize html
               let code = element.innerHTML;
+              const codeId = element.getAttribute("data-code-id");
+              if (codeId) {
+                code = codes[codeId] || code;
+              }
+
               let lines = code.split("\n").slice(1, -1);
-              const spaces = lines[0].search(/</);
+              const spaces = lines[0].search(/\S/);
               code = lines.map((line) => line.substring(spaces)).join("\n");
 
-              codeToHtml(code, { lang: "html", theme: "nord" })
+              // remove all data-consenty-id attributes
+              code = code.replace(/ data-consenty-id="\d+"/g, "");
+
+              // remove all class attributes (they are only for styling)
+              // only do this if the code element does not have .keepclasses
+              if (!element.classList.contains("keepclasses")) {
+                code = code.replace(/ class="[^"]*"/g, "");
+              }
+
+              codeToHtml(code, {
+                lang: element.getAttribute("data-lang") || "html",
+                theme: "nord",
+              })
                 .then((highlightedCode) => {
                   div.innerHTML = highlightedCode;
                 })
@@ -249,5 +538,21 @@
     <div class="uk-text-center uk-text-muted uk-text-small uk-section-small">
       built in vienna by <a href="https://www.baumrock.com">baumrock.com</a>
     </div>
+
+    <script>
+      // before consenty shows new elements we store the initial code for later
+      // this is to make sure that the docs' code sections don't show markup
+      // that was injected by consently and is not the initial markup
+      var codes = {};
+      document.addEventListener("consenty:beforeshow", (e) => {
+        let id = e.detail;
+        let el = consenty.elements[id].old;
+        let code = el.closest(".code");
+        if (!code) return;
+        if (code.hasAttribute("data-code-id")) return;
+        codes[id] = code.innerHTML;
+        code.setAttribute("data-code-id", id);
+      });
+    </script>
   </body>
 </html>

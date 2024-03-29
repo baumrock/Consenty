@@ -31,10 +31,10 @@ jobs:
           git commit -m "Minify consenty.js" -a || echo "No changes to commit"
 
       - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          force: true
+        run: |
+          git push origin HEAD:refs/heads/main --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release
         id: create_release

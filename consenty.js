@@ -83,13 +83,13 @@ var consenty;
 
     initCheckboxes() {
       document.querySelectorAll("[consenty-toggle]").forEach((checkbox) => {
-        checkbox.checked = this.isAllowed(
+        checkbox.checked = this.isTrue(
           checkbox.getAttribute("consenty-toggle")
         );
       });
     }
 
-    isAllowed(name) {
+    isTrue(name) {
       let storage = this.getStorage();
       return storage && name in storage ? !!storage[name] : false;
     }
@@ -108,13 +108,13 @@ var consenty;
         new CustomEvent("consenty:beforechange", {
           detail: {
             name: prop,
-            from: this.isAllowed(prop),
+            from: this.isTrue(prop),
             to: !!value,
           },
         })
       );
       let storage = this.getStorage();
-      const from = this.isAllowed(prop);
+      const from = this.isTrue(prop);
       if (!value) {
         document.dispatchEvent(
           new CustomEvent("consenty:beforerevoke", { detail: prop })
@@ -138,7 +138,7 @@ var consenty;
           detail: {
             name: prop,
             from: from,
-            to: this.isAllowed(prop),
+            to: this.isTrue(prop),
           },
         })
       );
@@ -169,10 +169,10 @@ var consenty;
 
         // toggle element / code
         if (type === "showif") {
-          if (show || this.isAllowed(prop)) this.loadElement(id);
+          if (show || this.isTrue(prop)) this.loadElement(id);
           else this.hideElement(id);
         } else {
-          if (show || this.isAllowed(prop)) this.hideElement(id);
+          if (show || this.isTrue(prop)) this.hideElement(id);
           else this.loadElement(id);
         }
       });

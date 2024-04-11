@@ -285,7 +285,7 @@
             document.addEventListener("consenty:click", (e) => {
               const prop = "youtube-modal";
               if (e.detail !== prop) return;
-              if (consenty.isAllowed(prop)) {
+              if (consenty.isTrue(prop)) {
                 consenty
                   // this loads markup from within <template>
                   .load(prop)
@@ -495,6 +495,30 @@
                   e.detail.to
               );
             });
+          </script>
+
+          <hr />
+
+          <h2>API Usage</h2>
+
+          <p>
+            When using page transition libraries like barba.js you need to send
+            pageviews manually to your tracking software. If the user revoke
+            consent you are not allowed to do so!
+          </p>
+
+          <script
+            class="code"
+            data-lang="js"
+          >
+            if (consenty.isTrue("matomo-optout")) {
+              // user chose to opt-out from tracking
+              // do nothing
+            } else {
+              // user allowed to collect statistics
+              // send pageview event to matomo
+              _paq.push(["trackPageView"]);
+            }
           </script>
 
           <script type="module">
